@@ -5,6 +5,7 @@
 #include "G4UImanager.hh"
 #include "G4VisManager.hh"
 #include "G4VisExecutive.hh"
+#include "G4NuclideTable.hh"
 #include "G4UIExecutive.hh"
 
 #include "LBCPhysicsList.hh"
@@ -19,6 +20,8 @@ int main(int argc, char** argv) {
     #else
         G4RunManager *runManager = new G4RunManager;
     #endif
+
+    G4NuclideTable::GetInstance()->SetThresholdOfHalfLife(200.0 * year);
 
     // Physics list
     runManager->SetUserInitialization(new LBCPhysicsList());

@@ -1,8 +1,9 @@
 /run/numberOfThreads 4
 /run/initialize
+/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+3 year
 
 /gps/particle ion
-/gps/ion 9 18 0 0
+/gps/ion 55 137 0 0
 /gps/energy 0 keV
 # /tracking/verbose 1
 /gps/ang/type iso
@@ -10,9 +11,11 @@
 /gps/pos/shape Sphere
 /gps/pos/centre 5. 0. 0. cm
 
+
 /gps/pos/confine physical_source
 /gps/pos/radius 1 mm
+/process/activate RadioactiveDecay
 
 /run/printProgress 10000
-/run/beamOn 100000
+/run/beamOn 50000
 #/process/list
