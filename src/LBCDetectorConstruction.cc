@@ -11,6 +11,7 @@ G4VPhysicalVolume *LBCDetectorConstruction::Construct(){
 
     G4NistManager *nist = G4NistManager::Instance();
     G4Material *worldMat = nist->FindOrBuildMaterial("G4_AIR");
+    G4Material *materialAluminum = nist->FindOrBuildMaterial("G4_Al");
 
     G4double halfxWorld = 0.2 * m;
     G4double halfyWorld = 0.2 * m;
@@ -60,20 +61,22 @@ G4VPhysicalVolume *LBCDetectorConstruction::Construct(){
     // Aluminum
     G4double rmin_Al = 0. * cm; // Inner radius
     G4double rmax_Al = 1.5 * cm; // Outer radius
-    G4double z_Al = 0.08 * cm; // length
+    G4double z_Al = 0.8 * cm; // length
     G4double startPhi_Al = 0. * deg; // Start angle
     G4double deltaPhi_Al = 360. * deg; // Full angle
 
     G4Tubs *solidAluminum = new G4Tubs("solidAluminum", rmin_Al, rmax_Al, z_Al/2, startPhi_Al, deltaPhi_Al);
-    G4LogicalVolume *logicAluminum = new G4LogicalVolume(solidAluminum, nist->FindOrBuildMaterial("G4_Al"), "logicalAluminum");
+    G4LogicalVolume *logicAluminum = new G4LogicalVolume(solidAluminum, materialAluminum, "logicalAluminum");
+    G4RotationMatrix *rotation = new G4RotationMatrix();
+    rotation->rotateY(90. * deg);
     G4VPhysicalVolume *physAluminum = new G4PVPlacement(rotation, G4ThreeVector(-z_Al/2, 0., 0.), logicAluminum, "physAluminum", logicWorld, false, 0, checkOverlaps);
 
     // LBC
-    rmin_LBC = 0. * cm; // Inner radius
-    rmax_LBC = 2.5 / 2 * cm; // Outer radius
-    z_LBC = 2.5 * cm; // length
-    startPhi_LBC = 0. * deg; // Start angle
-    deltaPhi_LBC = 360. * deg; // Full angle
+    G4double rmin_LBC = 0. * cm; // Inner radius
+    G4double rmax_LBC = 2.5 / 2 * cm; // Outer radius
+    G4double z_LBC = 2.5 * cm; // length
+    G4double startPhi_LBC = 0. * deg; // Start angle
+    G4double deltaPhi_LBC = 360. * deg; // Full angle
 
     G4Tubs *solidDetector = new G4Tubs("solidDetector", rmin_LBC, rmax_LBC, z_LBC/2, startPhi_LBC, deltaPhi_LBC);
     logicDetector = new G4LogicalVolume(solidDetector, materialLBC, "logicalDetector");
@@ -91,12 +94,9 @@ G4VPhysicalVolume *LBCDetectorConstruction::Construct(){
     G4double z_Glass = 0.27 * cm; // length
     G4double startPhi_Glass = 0. * deg; // Start angle
     G4double deltaPhi_Glass = 360. * deg; // Full angle
-    G4double 
 
     G4Tubs *solidGlass = new G4Tubs("solidGlass", rmin_Glass, rmax_Glass, z_Glass/2, startPhi_Glass, deltaPhi_Glass);
     G4LogicalVolume *logicGlass = new G4LogicalVolume(solidGlass, sio2, "logicalGlass");
-    G4RotationMatrix *rotation = new G4RotationMatrix();
-    rotation->rotateY(90. * deg);
     G4VPhysicalVolume *physGlass = new G4PVPlacement(rotation, G4ThreeVector(-z_Al-z_LBC-z_Glass/2, 0., 0.), logicGlass, "physGlass", logicWorld, false, 0, checkOverlaps);
 
     G4VisAttributes *glassVisAtt = new G4VisAttributes(G4Color(0.8, 0.8, 0.8, 0.5));
