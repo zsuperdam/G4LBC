@@ -57,39 +57,53 @@ G4VPhysicalVolume *LBCDetectorConstruction::Construct(){
     // Placement //
     //###########//
 
-    // Glass
-    G4double rmin = 0. * cm; // Inner radius
-    G4double rmax = 1.5 * cm; // Outer radius
-    G4double z = 0.27 * cm; // length
-    G4double startPhi = 0. * deg; // Start angle
-    G4double deltaPhi = 360. * deg; // Full angle
+    // Aluminum
+    G4double rmin_Al = 0. * cm; // Inner radius
+    G4double rmax_Al = 1.5 * cm; // Outer radius
+    G4double z_Al = 0.08 * cm; // length
+    G4double startPhi_Al = 0. * deg; // Start angle
+    G4double deltaPhi_Al = 360. * deg; // Full angle
 
-    G4Tubs *solidGlass = new G4Tubs("solidGlass", rmin, rmax, z/2, startPhi, deltaPhi);
+    G4Tubs *solidAluminum = new G4Tubs("solidAluminum", rmin_Al, rmax_Al, z_Al/2, startPhi_Al, deltaPhi_Al);
+    G4LogicalVolume *logicAluminum = new G4LogicalVolume(solidAluminum, nist->FindOrBuildMaterial("G4_Al"), "logicalAluminum");
+    G4VPhysicalVolume *physAluminum = new G4PVPlacement(rotation, G4ThreeVector(-z_Al/2, 0., 0.), logicAluminum, "physAluminum", logicWorld, false, 0, checkOverlaps);
+
+    // LBC
+    rmin_LBC = 0. * cm; // Inner radius
+    rmax_LBC = 2.5 / 2 * cm; // Outer radius
+    z_LBC = 2.5 * cm; // length
+    startPhi_LBC = 0. * deg; // Start angle
+    deltaPhi_LBC = 360. * deg; // Full angle
+
+    G4Tubs *solidDetector = new G4Tubs("solidDetector", rmin_LBC, rmax_LBC, z_LBC/2, startPhi_LBC, deltaPhi_LBC);
+    logicDetector = new G4LogicalVolume(solidDetector, materialLBC, "logicalDetector");
+    G4RotationMatrix *rotationLBC = new G4RotationMatrix();
+    rotationLBC->rotateY(90. * deg);
+    G4VPhysicalVolume *physLBC = new G4PVPlacement(rotationLBC, G4ThreeVector(-z_Al-z_LBC/2, 0., 0.), logicDetector, "physLBC", logicWorld, false, 0, checkOverlaps);
+
+    G4VisAttributes *lbcVisAtt = new G4VisAttributes(G4Color(1.0, 0.5, 0.0, 0.5));
+    lbcVisAtt->SetForceSolid(true);
+    logicDetector->SetVisAttributes(lbcVisAtt);
+
+    // Glass
+    G4double rmin_Glass = 0. * cm; // Inner radius
+    G4double rmax_Glass = 1.5 * cm; // Outer radius
+    G4double z_Glass = 0.27 * cm; // length
+    G4double startPhi_Glass = 0. * deg; // Start angle
+    G4double deltaPhi_Glass = 360. * deg; // Full angle
+    G4double 
+
+    G4Tubs *solidGlass = new G4Tubs("solidGlass", rmin_Glass, rmax_Glass, z_Glass/2, startPhi_Glass, deltaPhi_Glass);
     G4LogicalVolume *logicGlass = new G4LogicalVolume(solidGlass, sio2, "logicalGlass");
     G4RotationMatrix *rotation = new G4RotationMatrix();
     rotation->rotateY(90. * deg);
-    G4VPhysicalVolume *physGlass = new G4PVPlacement(rotation, G4ThreeVector(-0.27/2*cm, 0., 0.), logicGlass, "physGlass", logicWorld, false, 0, checkOverlaps);
+    G4VPhysicalVolume *physGlass = new G4PVPlacement(rotation, G4ThreeVector(-z_Al-z_LBC-z_Glass/2, 0., 0.), logicGlass, "physGlass", logicWorld, false, 0, checkOverlaps);
 
     G4VisAttributes *glassVisAtt = new G4VisAttributes(G4Color(0.8, 0.8, 0.8, 0.5));
     glassVisAtt->SetForceSolid(true);
     logicGlass->SetVisAttributes(glassVisAtt);
 
-    // LBC
-    rmin = 0. * cm; // Inner radius
-    rmax = 2.5 / 2 * cm; // Outer radius
-    z = 2.5 * cm; // length
-    startPhi = 0. * deg; // Start angle
-    deltaPhi = 360. * deg; // Full angle
 
-    G4Tubs *solidDetector = new G4Tubs("solidDetector", rmin, rmax, z/2, startPhi, deltaPhi);
-    logicDetector = new G4LogicalVolume(solidDetector, materialLBC, "logicalDetector");
-    G4RotationMatrix *rotationLBC = new G4RotationMatrix();
-    rotationLBC->rotateY(90. * deg);
-    G4VPhysicalVolume *physLBC = new G4PVPlacement(rotationLBC, G4ThreeVector(-0.27*cm-1.25*cm, 0., 0.), logicDetector, "physLBC", logicWorld, false, 0, checkOverlaps);
-
-    G4VisAttributes *lbcVisAtt = new G4VisAttributes(G4Color(1.0, 0.5, 0.0, 0.5));
-    lbcVisAtt->SetForceSolid(true);
-    logicDetector->SetVisAttributes(lbcVisAtt);
     // Source
     G4double sourceRadius = 1. * mm;
 
